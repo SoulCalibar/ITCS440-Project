@@ -13,4 +13,5 @@ df = pd.read_csv("mushrooms.data", header=None, names=columns)
 # Save the data to a CSV file
 # The index is set to False to avoid writing row numbers
 df.to_csv("mushrooms.csv", index=False)
+# Print a message indicating successful conversion
 print("Converted to mushrooms.csv successfully.")
