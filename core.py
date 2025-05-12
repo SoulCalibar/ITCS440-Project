@@ -59,3 +59,5 @@ for name, model in models.items():
     print(f"Accuracy of {name}: {accuracy:.4f}") # Print accuracy
     print("Classification Report:") # Print classification report
     print(classification_report(y_test, y_pred, target_names=["Edible", "Poisonous"]))
+
+print("\n=================================================================================")
