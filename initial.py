@@ -1,4 +1,10 @@
 import pandas as pd
+
+# print an error if the file isn't there
+if not os.path.exists("mushrooms.data"):
+    print("Error: mushrooms.data not found in the current directory.")
+    exit(1)
+
 # This script converts the mushrooms dataset from a .data file to a .csv file.
 # The dataset is from the UCI Machine Learning Repository.
 columns = [
