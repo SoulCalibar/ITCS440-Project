@@ -8,8 +8,16 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+import os
+
+# print an error if the file isn't there
+if not os.path.exists("mushrooms.csv"):
+    print("Error: mushrooms.csv not found in the current directory.")
+    exit(1)
+
 # Assumes dataset is saved as "mushrooms.csv" in the same directory (done by initial.py)
 data = pd.read_csv("mushrooms.csv")
+
 # Check for missing values
 print("\n\n=================================================================================")
 print("\nDataset loaded successfully.\n\n")
