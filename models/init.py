@@ -4,7 +4,6 @@
 The models package contains implementations of all machine learning
 classifiers, each adhering to a common interface (BaseModel).
 """
-
 from .logistic_regression import LogisticRegressionModel
 from .decision_tree import DecisionTreeModel
 from .svm import SVMModel

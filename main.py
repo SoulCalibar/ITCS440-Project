@@ -2,7 +2,7 @@
 
 from utils.data_loader import load_and_split
 from utils.preprocessing import build_preprocessor, preprocess_data
-from models import (
+from models.init import (
     LogisticRegressionModel,
     DecisionTreeModel,
     SVMModel,

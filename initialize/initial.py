@@ -11,7 +11,6 @@ columns = [
 
 # Load the data file (assumes it's named 'mushrooms.data' and is in the same folder)
 df = pd.read_csv("mushrooms.data", header=None, names=columns)
-
 # Save to CSV
 df.to_csv("mushrooms.csv", index=False)
 
