@@ -9,6 +9,7 @@ from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 import os
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 # print an error if the file isn't there
 if not os.path.exists("mushrooms.csv"):
@@ -47,6 +48,18 @@ y = data["class"]               # Target variable (0 = edible, 1 = poisonous)
 # Split data into train and test sets
 # 80% for training, 20% for testing
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature scaling for better performance
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# One-hot encoding for categorical features
+encoder = OneHotEncoder(sparse_output=False)
+X_train_encoded = encoder.fit_transform(X_train)
+X_test_encoded = encoder.transform(X_test)
+
+
 # Logistic Regression, Neural Network, SVM, Decision Tree, Random Forest
 # Each model is initialized with default parameters
 models = {
@@ -61,8 +74,8 @@ models = {
 # and train it on the training data
 for name, model in models.items():
     print(f"\nTraining {name}...") # Print the name of the model being trained
-    model.fit(X_train, y_train)                # Train the model
-    y_pred = model.predict(X_test)             # Predict on test data
+    model.fit(X_train_encoded, y_train)                # Train the model
+    y_pred = model.predict(X_test_encoded)             # Predict on test data
     accuracy = accuracy_score(y_test, y_pred)  # Calculate accuracy
     print(f"Accuracy of {name}: {accuracy:.4f}") # Print accuracy
     print("Classification Report:") # Print classification report
