@@ -71,7 +71,7 @@ y = data[target_variable]
 
 # Split data into train and test sets
 # 80% for training, 20% for testing
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.34, random_state=42)
 
 # One-hot encoding for categorical features
 encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
