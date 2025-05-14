@@ -21,9 +21,13 @@ for column in data.columns:
     data[column] = le.fit_transform(data[column])
     label_encoders[column] = le  # Save encoders for possible inverse transform later
 
-# Separate features and target
-X = data.drop("class", axis=1)  # Features
-y = data["class"]               # Target variable (0 = edible, 1 = poisonous)
+# if the data.columns[0] is there not null
+if data.columns[0] is None:
+    raise ValueError("The first column of the dataset is None. Please check the dataset.")
+
+# Assuming the first column is the target variable
+X = data.drop(data.columns[0], axis=1)
+y = data[data.columns[0]]  # Assuming the first column is the target variable
 
 # Split data into train and test sets (80% for training, 20% for testing)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

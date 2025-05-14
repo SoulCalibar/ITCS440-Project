@@ -10,11 +10,18 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 import os
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
+import joblib
 
 # print an error if the file isn't there
 if not os.path.exists("mushrooms.csv"):
     print("Error: mushrooms.csv not found in the current directory.")
     exit(1)
+
+
+# save the model to a file
+def save_model(model, filename):
+    joblib.dump(model, filename)
+    print(f"Model saved to {filename}")
 
 # Assumes dataset is saved as "mushrooms.csv" in the same directory (done by initial.py)
 data = pd.read_csv("mushrooms.csv")
@@ -42,22 +49,41 @@ for column in data.columns:
     le = LabelEncoder()
     data[column] = le.fit_transform(data[column])
     label_encoders[column] = le  # Save encoders for possible inverse transform later
+
+print("\n\n=================================================================================")
+# print the column names and their corresponding numerical values
+print("Column names")
+print(data.columns)
+print("\n\n")
+# ask the user what the target variable is
+target_variable = input("Enter the name of the target variable (last column): ")
+
+
+# Check if the target variable is in the dataset
+if target_variable not in data.columns:
+    # raise ValueError(f"Target variable '{target_variable}' not found in the dataset.")
+    # set target variable to the last column
+    target_variable = data.columns[-1]
+
 # Separate features and target
-X = data.drop("class", axis=1)  # Features
-y = data["class"]               # Target variable (0 = edible, 1 = poisonous)
+X = data.drop(target_variable, axis=1)  # Features            # Target variable (0 = edible, 1 = poisonous)
+y = data[target_variable]
+
 # Split data into train and test sets
 # 80% for training, 20% for testing
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Feature scaling for better performance
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-
 # One-hot encoding for categorical features
-encoder = OneHotEncoder(sparse_output=False)
+encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
 X_train_encoded = encoder.fit_transform(X_train)
 X_test_encoded = encoder.transform(X_test)
+
+# Feature scaling for better performance
+scaler = StandardScaler()
+print(X_train_encoded)
+print(X_test_encoded)
+X_train_scaled = scaler.fit_transform(X_train_encoded)
+X_test_scaled = scaler.transform(X_test_encoded)
 
 
 # Logistic Regression, Neural Network, SVM, Decision Tree, Random Forest
@@ -74,11 +100,15 @@ models = {
 # and train it on the training data
 for name, model in models.items():
     print(f"\nTraining {name}...") # Print the name of the model being trained
-    model.fit(X_train_encoded, y_train)                # Train the model
-    y_pred = model.predict(X_test_encoded)             # Predict on test data
+    model.fit(X_train_scaled, y_train)                # Train the model
+    y_pred = model.predict(X_test_scaled)             # Predict on test data
     accuracy = accuracy_score(y_test, y_pred)  # Calculate accuracy
     print(f"Accuracy of {name}: {accuracy:.4f}") # Print accuracy
     print("Classification Report:") # Print classification report
-    print(classification_report(y_test, y_pred, target_names=["Edible", "Poisonous"]))
 
+    # Get the unique classes from your target variable
+    unique_classes = sorted(label_encoders[target_variable].classes_)
+    print(classification_report(y_test, y_pred, target_names=unique_classes))
 print("\n=================================================================================")
+
+save_model(models["Random Forest"], "random_forest.joblib")
