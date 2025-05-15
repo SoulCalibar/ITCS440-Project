@@ -69,35 +69,64 @@ if target_variable not in data.columns:
 X = data.drop(target_variable, axis=1)  # Features            # Target variable (0 = edible, 1 = poisonous)
 y = data[target_variable]
 
-# Split data into train and test sets
-# 80% for training, 20% for testing
+# Split dataset into training (66%) and testing (34%) sets
+# random_state=42 ensures reproducibility of the random split across multiple runs
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.34, random_state=42)
 
-# One-hot encoding for categorical features
+# Initialize OneHotEncoder for categorical variable transformation
+# sparse_output=False returns a dense numpy array instead of sparse matrix
+# handle_unknown='ignore' safely handles any new categories in test data
 encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+
+# Convert categorical variables to binary format (one-hot encoding)
+# This is necessary for machine learning algorithms to work with categorical data
+# The fit_transform method learns the categories from the training data
+# and transforms the data into a binary format
+# For example, if the column 'color' has values ['red', 'blue', 'green'],
+# 'color': ['red'] -> [1, 0, 0] (red, blue, green)
 X_train_encoded = encoder.fit_transform(X_train)
+
+# Apply the same encoding to test data using the categories learned from training
+# This ensures consistency between training and test transformations
 X_test_encoded = encoder.transform(X_test)
 
-# Feature scaling for better performance
+
+
+# Feature scaling; for better performance
+
+# StandardScaler standardizes features by removing the mean and scaling to unit variance
+# This is important for algorithms like SVM and Neural Networks that are sensitive to the scale of the features
+# It transforms the data to have a mean of 0 and a standard deviation of 1
+# For example, if the feature 'height' has values [1.5, 2.0, 2.5],
+# StandardScaler will transform it to have a mean of 0 and std of 1
+# The fit_transform method learns the mean and std from the training data and transforms the data
+# The transform method applies the same transformation to the test data
+# This is important to avoid data leakage and ensure that the model generalizes well
 scaler = StandardScaler()
 print(X_train_encoded)
 print(X_test_encoded)
 X_train_scaled = scaler.fit_transform(X_train_encoded)
 X_test_scaled = scaler.transform(X_test_encoded)
 
-
 # Logistic Regression, Neural Network, SVM, Decision Tree, Random Forest
+#logistic vs linear regression: Logistic regression is a classification algorithm, while linear regression is used for continous variables.
 # Each model is initialized with default parameters
 models = {
+    #1000 iterations for convergence, prevents warnings but increases training time
     "Logistic Regression": LogisticRegression(max_iter=1000),
+    # MLPClassifier is a multi-layer perceptron classifier
+    # 50 neurons in the first hidden layer and 30 in the second
+    # max_iter=1000 ensures the model trains for a maximum of 1000 iterations
     "Neural Network": MLPClassifier(hidden_layer_sizes=(50, 30), max_iter=1000),
     "Support Vector Machine": SVC(),
     "Decision Tree": DecisionTreeClassifier(),
+    # n_estimators=100 means it will use 100  trees, balanced for time and accuracy and performance
     "Random Forest": RandomForestClassifier(n_estimators=100)
 }
 # Train and evaluate each model
 # Loop through each model in the models dictionary
 # and train it on the training data
+
 for name, model in models.items():
     print(f"\nTraining {name}...") # Print the name of the model being trained
     model.fit(X_train_scaled, y_train)                # Train the model
@@ -111,4 +140,8 @@ for name, model in models.items():
     print(classification_report(y_test, y_pred, target_names=unique_classes))
 print("\n=================================================================================")
 
+save_model(models["Logistic Regression"], "logistic_regression.joblib")
+save_model(models["Neural Network"], "neural_network.joblib")
+save_model(models["Support Vector Machine"], "support_vector_machine.joblib")
+save_model(models["Decision Tree"], "decision_tree.joblib")
 save_model(models["Random Forest"], "random_forest.joblib")

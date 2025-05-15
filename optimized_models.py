@@ -26,17 +26,16 @@ if data.columns[0] is None:
     raise ValueError("The first column of the dataset is None. Please check the dataset.")
 
 # Assuming the first column is the target variable
-X = data.drop(data.columns[0], axis=1)
-y = data[data.columns[0]]  # Assuming the first column is the target variable
+X = data.drop(data.columns[0], axis=1) # Features (all columns except the first)
+y = data[data.columns[0]] # Target variable (first column)
 
-# Split data into train and test sets (80% for training, 20% for testing)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Split data into train and test sets (66% for training, 34% for testing)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.34, random_state=42)
 
 # Feature scaling for better performance
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
-
 print(f"Training set size: {X_train.shape[0]} samples")
 print(f"Testing set size: {X_test.shape[0]} samples")
 
